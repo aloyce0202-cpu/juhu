@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mwongozo wa Ndoa - Pastor Aloyce</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-color: #333;
+            --progress-bg: #ddd;
+            --font-size-base: 16px;
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #ecf0f1;
+            --accent-color: #ff7675;
+            --bg-color: #1a1a1a;
+            --card-bg: #2d2d2d;
+            --text-color: #f1f1f1;
+            --progress-bg: #444;
+        }
+
+        * { box-sizing: border-box; transition: all 0.3s ease; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            font-size: var(--font-size-base);
+        }
+
+        header {
+            background: var(--primary-color);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .controls {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+        }
+
+        button.tool-btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button.tool-btn:hover { transform: scale(1.1); }
+
+        #progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: var(--progress-bg);
+            z-index: 1100;
+        }
+
+        #progress-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--accent-color);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .module-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-left: 5px solid var(--accent-color);
+        }
+
+        h2 { color: var(--accent-color); margin-top: 0; }
+
+        .question-box {
+            background: rgba(0,0,0,0.03);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            display: none; /* Initially hidden for flow discipline */
+        }
+
+        .question-box.active { display: block; animation: fadeIn 0.5s; }
+
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin: 10px 0;
+            font-family: inherit;
+        }
+
+        .btn-action {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: inline-block;
+        }
+
+        .btn-action:hover { background: var(--accent-color); }
+
+        .btn-action:disabled { background: #ccc; cursor: not-allowed; }
+
+        .feedback-area {
+            margin-top: 10px;
+            padding: 10px;
+            background: #d4edda;
+            color: #155724;
+            border-radius: 5px;
+            display: none;
+            font-style: italic;
+        }
+
+        [data-theme="dark"] .feedback-area {
+            background: #1e4627;
+            color: #d4edda;
+        }
+
+        footer {
+            text-align: center;
+            padding: 3rem;
+            background: var(--primary-color);
+            color: white;
+            margin-top: 4rem;
+        }
+
+        .stats-summary {
+            background: var(--accent-color);
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 0.5rem; }
+            header { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="progress-container"><div id="progress-bar"></div></div>
+
+    <div class="controls">
+        <button class="tool-btn" onclick="toggleTheme()">🌙 Mode</button>
+        <button class="tool-btn" onclick="changeFontSize(1)">A+</button>
+        <button class="tool-btn" onclick="changeFontSize(-1)">A-</button>
+    </div>
+
+    <header>
+        <h1>Mazoezi ya Moduli Nne</h1>
+        <p>Pastor Aloyce - Disciples Community Church</p>
+    </header>
+
+    <div class="container">
+        <div class="stats-summary" id="stats-area">
+            Maswali yaliyojibiwa: <span id="answered-count">0</span> / 40 (<span id="percent">0</span>%)
+        </div>
+
+        <article id="content">
+            <section class="module-card" id="mod1">
+                <h2>Moduli ya Kwanza: Kuongeza Heshima ya Mke</h2>
+                <div id="m1-q-container"></div>
+            </section>
+
+            <section class="module-card" id="mod2">
+                <h2>Moduli ya Pili: Atajuaje Kama Mkewe Anamtii?</h2>
+                <div id="m2-q-container"></div>
+            </section>
+
+            <section class="module-card" id="mod3">
+                <h2>Moduli ya Tatu: Vipimo vya Utii wa Mwanamke</h2>
+                <div id="m3-q-container"></div>
+            </section>
+
+            <section class="module-card" id="mod4">
+                <h2>Moduli ya Nne: Namna ya Kuishi na Mwanamke Mwenye Nguvu</h2>
+                <div id="m4-q-container"></div>
+            </section>
+        </article>
+
+        <div id="final-congrats" style="display:none;" class="module-card">
+            <h2>Hongera Sana!</h2>
+            <p>Ukimaliza kutafakari mazoezi haya na kuyafanyia kazi, utakuwa umejijengea msingi usiotikisika wa uongozi wa familia.</p>
+            <p><strong>Pastor Aloyce</strong><br>Kisesa Mwanza | 0757 344 860</p>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026: Pastor Aloyce: Disciples Community Church Kisesa Mwanza: 0757 344 860</p>
+    </footer>
+
+    <script>
+        const data = [
+            {
+                module: 1,
+                container: "m1-q-container",
+                questions: [
+                    { q: "Ni jambo gani moja la kihisia ambalo mkeo amekuwa akiliomba na hujalitekeleza?", a: "Mwongozo: Kusikiliza mahitaji ya kihisia ni nguzo ya heshima." },
+                    { q: "Taja njia tatu za kumlinda mkeo dhidi ya dharau kutoka kwa ndugu au marafiki.", a: "Mwongozo: Wewe ni ngao yake; usiruhusu dharau mbele yako." },
+                    { q: "Je, unashirikiana na mkeo kupanga bajeti ya familia? (Ndiyo/Hapana).", a: "Mwongozo: Uwazi wa kifedha hujenga uaminifu na heshima." },
+                    { q: "Unafanya nini unapokuwa na hasira ili usipoteze heshima yako mbele ya mkeo?", a: "Mwongozo: Hekima wakati wa hasira ni alama ya kiongozi bora." },
+                    { q: "Mara ya mwisho kumshukuru mkeo kwa huduma anazotoa nyumbani ilikuwa lini?", a: "Mwongozo: Shukrani ndogo huchochea upendo mkubwa." },
+                    { q: "Je, mkeo anajua vipaumbele vyako vya mwaka huu?", a: "Mwongozo: Kumshirikisha maono kunamfanya ajisikie sehemu ya safari." },
+                    { q: "Taja sifa tatu za mkeo unazozisifia hadharani.", a: "Mwongozo: Sifa za hadharani huongeza thamani yake mbele ya jamii." },
+                    { q: "Unatenga muda gani wa faragha na mkeo bila watoto au simu?", a: "Mwongozo: Muda wa bora (Quality Time) ni muhimu kwa uhusiano." },
+                    { q: "Je, unatimiza ahadi zako ndogondogo unazompa mkeo?", a: "Mwongozo: Ahadi zilizotimizwa hujenga uadilifu wako." },
+                    { q: "Ni tabia gani moja uliyonayo unahisi inapunguza heshima yako kwake?", a: "Mwongozo: Kujitambua ni hatua ya kwanza ya mabadiliko." }
+                ]
+            },
+            {
+                module: 2,
+                container: "m2-q-container",
+                questions: [
+                    { q: "Je, mkeo anakuomba ushauri kabla ya kuanzisha jambo jipya?", a: "Mwongozo: Hii inaonyesha anakutambua kama mshauri mkuu." },
+                    { q: "Unapotoa mwongozo ambao hakubaliani nao, anajibu kwa hoja au kwa dharau?", a: "Mwongozo: Utii haumaanishi kutokuwa na hoja, bali ni namna ya kuziwasilisha." },
+                    { q: "Je, mkeo anazungumza sifa zako au mapungufu yako mbele ya mashoga zake?", a: "Mwongozo: Mke anayetii hutunza heshima ya mumewe nje ya nyumba." },
+                    { q: "Anapopata fedha zake mwenheme, je, anakushirikisha matumizi yake?", a: "Mwongozo: Ushirikiano wa kifedha ni ishara ya umoja." },
+                    { q: "Je, anakukaribisha unaporudi nyumbani kwa uchangamfu?", a: "Mwongozo: Mapokezi yanaonyesha kiwango cha amani kilichopo." },
+                    { q: "Anatumia lugha gani anapokosoa makosa yako?", a: "Mwongozo: Lugha ya staha inaonyesha unyenyekevu." },
+                    { q: "Je, anatekeleza majukumu ya nyumbani kwa upendo au kwa manung'uniko?", a: "Mwongozo: Utii wa kweli unatoka moyoni, si kwa shuruti." },
+                    { q: "Anajali vipi muda wako wa kupumzika na utulivu?", a: "Mwongozo: Kujali mapumziko yako ni ishara ya upendo na utii." },
+                    { q: "Je, anakuunga mkono mbele ya watoto hata kama hamjaelewana faragha?", a: "Mwongozo: Umoja mbele ya watoto ni siri ya mamlaka ya familia." },
+                    { q: "Je, anakuamini kiasi cha kukuachia usukani wa maamuzi magumu?", a: "Mwongozo: Imani ya mke kwa mumewe ndio nguzo ya utii." }
+                ]
+            },
+            {
+                module: 3,
+                container: "m3-q-container",
+                questions: [
+                    { q: "(Kipimo cha Mwitikio): Unapopiga simu, je, anapokea au kurudisha kwa wakati na kwa lugha nzuri?", a: "Mwongozo: Mawasiliano ya haraka ni ishara ya kipaumbele." },
+                    { q: "(Kipimo cha Maono): Je, anajua ndoto zako za miaka mitano ijayo na anazichukuliaje?", a: "Mwongozo: Mke mtiifu ni msaidizi wa maono yako." },
+                    { q: "(Kipimo cha Faragha): Je, anatii mahitaji yako ya chumbani kwa unyenyekevu na upendo?", a: "Mwongozo: Heshima ya chumbani ni msingi wa amani." },
+                    { q: "(Kipimo cha Ndugu): Je, anawastahi ndugu zako kwa sababu yako?", a: "Mwongozo: Heshima kwa ndugu zako ni heshima kwako mwenyewe." },
+                    { q: "(Kipimo cha Mazingira): Je, anahakikisha nyumba ni mahali salama na tulivu kwako?", a: "Mwongozo: Nyumba ikiwa na amani, mume anatamani kurudi nyumbani." },
+                    { q: "(Kipimo cha Maoni): Je, anasikiliza unapotaka kurekebisha mavazi au mienendo yake?", a: "Mwongozo: Kukubali marekebisho ni ishara ya unyenyekevu." },
+                    { q: "(Kipimo cha Migogoro): Je, huwa ni wa kwanza kuomba msamaha au kusaka suluhu?", a: "Mwongozo: Nia ya suluhu ni muhimu kuliko ushindi wa hoja." },
+                    { q: "(Kipimo cha Siri): Je, siri za ndani kwenu zinabaki ndani au zinatoka nje?", a: "Mwongozo: Usiri ni ulinzi wa familia yenu." },
+                    { q: "(Kipimo cha Ibada/Imani): Je, anakuunga mkono katika misingi ya kiroho ya familia?", a: "Mwongozo: Umoja wa kiroho huimarisha kifungo cha ndoa." },
+                    { q: "(Kipimo cha Shukurani): Je, anaridhika na kile unachotoa hata kikiwa kidogo?", a: "Mwongozo: Kuridhika ni dawa ya manung'uniko ndani ya nyumba." }
+                ]
+            },
+            {
+                module: 4,
+                container: "m4-q-container",
+                questions: [
+                    { q: "Ikiwa mkeo anapata mshahara mkubwa kukuzidi, unajisikiaje ndani ya nafsi yako?", a: "Mwongozo: Thamani yako haitokani na mfuko, bali uongozi wako." },
+                    { q: "Je, una maono binafsi (vision) yanayokufanya uwe na thamani nje ya fedha?", a: "Mwongozo: Maono makubwa yanavutia heshima hata bila fedha nyingi." },
+                    { q: "Unamsaidiaje mkeo kupanda zaidi kielimu au kiuchumi bila kuogopa atakuacha?", a: "Mwongozo: Kiongozi anajiamini na huinua walio chini yake." },
+                    { q: "Unapopata changamoto ya kifedha, unawezaje kuomba msaada kwake bila kupoteza mamlaka yako?", a: "Mwongozo: Unyenyekevu na uwazi ni sifa za mume imara." },
+                    { q: "Je, unajua vyanzo vyake vya mapato na changamoto za kazi yake?", a: "Mwongozo: Kuelewa kazi yake inakusaidia kumpa ushauri sahihi." },
+                    { q: "Unafanya nini ili usionekane kama 'tegemezi' (parasite) kwenye mafanikio yake?", a: "Mwongozo: Jishughulishe na ongeza thamani kwa namna nyingine." },
+                    { q: "Je, unampa ushauri wa kimkakati unaomsaidia kufanikiwa zaidi?", a: "Mwongozo: Kuwa mshauri wake mkuu kiuchumi na kiakili." },
+                    { q: "Unashughulikiaje hisia za wivu mkeo anapokuwa maarufu kuliko wewe?", a: "Mwongozo: Mafanikio yake ni mafanikio ya familia yenu." },
+                    { q: "Je, unahakikisha unatimiza majukumu yako ya msingi ya kiume (ulinzi na uongozi) bila kujali yeye ana nini?", a: "Mwongozo: Majukumu ya kiume hayategemei nani ana hela." },
+                    { q: "Unatumia vipi hekima yako kutatua migogoro bila kutumia kigezo cha 'mimi ndiye mume'?", a: "Mwongozo: Hekima huleta heshima ya kudumu kuliko mabavu." }
+                ]
+            }
+        ];
+
+        let totalAnswered = 0;
+        const totalQuestions = 40;
+
+        function init() {
+            data.forEach((mod) => {
+                const container = document.getElementById(mod.container);
+                mod.questions.forEach((item, idx) => {
+                    const qId = `q-${mod.module}-${idx}`;
+                    const qDiv = document.createElement('div');
+                    qDiv.className = 'question-box';
+                    qDiv.id = `box-${qId}`;
+                    
+                    // Show first question of first module
+                    if(mod.module === 1 && idx === 0) qDiv.classList.add('active');
+
+                    qDiv.innerHTML = `
+                        <p><strong>Swali ${idx + 1}:</strong> ${item.q}</p>
+                        <textarea id="ans-${qId}" placeholder="Andika jibu lako hapa..."></textarea>
+                        <br>
+                        <button class="btn-action" id="btn-${qId}" onclick="submitAnswer('${mod.module}', ${idx})">Tuma Jibu & Onyesha Mwongozo</button>
+                        <div class="feedback-area" id="feedback-${qId}">
+                            <strong>Mwongozo wa Pastor:</strong> ${item.a}
+                        </div>
+                    `;
+                    container.appendChild(qDiv);
+                });
+            });
+        }
+
+        function submitAnswer(modNum, qIdx) {
+            const currentQId = `q-${modNum}-${qIdx}`;
+            const textarea = document.getElementById(`ans-${currentQId}`);
+            const feedback = document.getElementById(`feedback-${currentQId}`);
+            const btn = document.getElementById(`btn-${currentQId}`);
+
+            if (textarea.value.trim() === "") {
+                alert("Tafadhali andika jibu kwanza ili uendelee.");
+                return;
+            }
+
+            // Show feedback
+            if (feedback.style.display === "none" || feedback.style.display === "") {
+                feedback.style.display = "block";
+                btn.innerText = "Ficha Mwongozo";
+                btn.style.background = "#e74c3c";
+                
+                // Track progress only once per question
+                if (!textarea.disabled) {
+                    totalAnswered++;
+                    updateProgress();
+                    textarea.disabled = true; // Discipline: cannot change answer once submitted
+                    
+                    // Logic to show NEXT question
+                    showNext(parseInt(modNum), qIdx);
+                }
+            } else {
+                feedback.style.display = "none";
+                btn.innerText = "Onyesha Mwongozo";
+                btn.style.background = "#2c3e50";
+            }
+        }
+
+        function showNext(m, i) {
+            let nextM = m;
+            let nextI = i + 1;
+
+            if (nextI >= 10) {
+                nextM = m + 1;
+                nextI = 0;
+            }
+
+            if (nextM <= 4) {
+                const nextBox = document.getElementById(`box-q-${nextM}-${nextI}`);
+                if (nextBox) {
+                    nextBox.classList.add('active');
+                    nextBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            } else {
+                document.getElementById('final-congrats').style.display = 'block';
+                document.getElementById('final-congrats').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function updateProgress() {
+            const percent = (totalAnswered / totalQuestions) * 100;
+            document.getElementById('progress-bar').style.width = percent + '%';
+            document.getElementById('answered-count').innerText = totalAnswered;
+            document.getElementById('percent').innerText = Math.round(percent);
+        }
+
+        // Tools Functions
+        function toggleTheme() {
+            const body = document.body;
+            const current = body.getAttribute('data-theme');
+            body.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+        }
+
+        let currentFontSize = 16;
+        function changeFontSize(delta) {
+            currentFontSize += delta;
+            document.body.style.fontSize = currentFontSize + 'px';
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
